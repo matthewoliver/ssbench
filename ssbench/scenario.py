@@ -34,7 +34,8 @@ class Scenario(object):
     def __init__(self, scenario_filename=None, container_count=None,
                  user_count=None, operation_count=None, run_seconds=None,
                  block_size=None, _scenario_data=None,
-                 version=ssbench.version, delete_after=None, policy=None):
+                 version=ssbench.version, delete_after=None, policy=None,
+                 container_put_headers=None):
         """Initializes the object from a scenario file on disk.
 
         :scenario_filename: path to a scenario file
@@ -93,6 +94,13 @@ class Scenario(object):
             if self.policy is not None:
                 self.policy = str(self.policy)
 
+        # grab any extra container PUT headers requested
+        if container_put_headers is not None:
+            self.container_put_headers = container_put_headers
+        else:
+            self.container_put_headers = \
+                self._scenario_data.get('container_put_headers')
+
         self.block_size = block_size
         self.name = self._scenario_data['name']
         self.container_base = self._scenario_data.get('container_base',
@@ -104,7 +112,7 @@ class Scenario(object):
                 'container_count', 100)
         policy_name = 'default_policy' if self.policy is None else self.policy
         self.containers = ['%s_%06d_%s' % (self.container_base, i, policy_name)
-                           for i in xrange(self.container_count)]
+                           for i in range(self.container_count)]
         self.container_concurrency = self._scenario_data.get(
             'container_concurrency', 10)
 

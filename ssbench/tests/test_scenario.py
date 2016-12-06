@@ -22,7 +22,7 @@ from cStringIO import StringIO
 from nose.tools import (assert_equal, assert_dict_equal, assert_is_instance,
                         assert_raises, assert_list_equal, assert_not_in,
                         assert_almost_equal, assert_true, assert_in,
-                        assert_greater)
+                        assert_greater, assert_is_none)
 from exceptions import OSError
 from collections import Counter
 
@@ -246,6 +246,20 @@ class TestScenario(ScenarioFixture):
             scenario.containers,
             ['iggy_%06d_default_policy' % i for i in xrange(77)])
         assert_equal(13, scenario.container_concurrency)
+
+    def test_container_put_headers(self):
+        # first sanity, no container_put_headers
+        scenario = Scenario(self.stub_scenario_file)
+        assert_is_none(scenario.container_put_headers)
+
+        # now define some
+        headers = {
+            'X-Container-Meta-Foo': 'Bar',
+            'X-Container-Sharding': True}
+        self.scenario_dict['container_put_headers'] = headers
+        self.write_scenario_file()
+        scenario = Scenario(self.stub_scenario_file)
+        assert_dict_equal(scenario.container_put_headers, headers)
 
     def test_crud_pcts(self):
         assert_list_equal([10.0 / 22 * 100,

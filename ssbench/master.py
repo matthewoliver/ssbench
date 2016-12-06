@@ -37,8 +37,14 @@ from ssbench.util import raise_file_descriptor_limit
 from ssbench.util import is_ipv6
 
 
-def _container_creator(storage_urls, token, container, policy=None):
+def _container_creator(storage_urls, token, container, policy=None,
+                       extra_headers=None):
     put_headers = None if policy is None else {'x-storage-policy': policy}
+    if extra_headers:
+        if put_headers:
+            put_headers.update(extra_headers)
+        else:
+            put_headers = extra_headers
     storage_url = random.choice(storage_urls)
     http_conn = client.http_connection(storage_url)
     try:
@@ -334,9 +340,11 @@ class Master(object):
                          len(scenario.containers), scenario.container_base,
                          scenario.container_concurrency)
             pool = gevent.pool.Pool(scenario.container_concurrency)
+            extra_headers = scenario.container_put_headers or None
             for container in scenario.containers:
                 pool.spawn(_container_creator, storage_urls, c_token,
-                           container, policy=scenario.policy)
+                           container, policy=scenario.policy,
+                           extra_headers=extra_headers)
             pool.join()
 
         # Enqueue initialization jobs
