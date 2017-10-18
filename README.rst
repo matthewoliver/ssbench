@@ -182,6 +182,8 @@ defining a benchmark run.  Specifically, it defines:
   run will be created with this Storage Policy.
   This can be overridden for any given run with the ``--policy storage-policy``
   flag to ``ssbench-master run-scenario``.
+- A ``put_headers`` which lists extra headers to include in object GET/read
+  requests. In the form of a dictionary of (header, value) pairs.
 
 For each operation of the benchmark run, a size category is first chosen based
 on the relative counts for each size category in the ``initial_files``

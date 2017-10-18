@@ -305,6 +305,8 @@ class Worker(object):
                                   client.DEFAULT_CONNECT_TIMEOUT),
                     call_info.get('network_timeout',
                                   client.DEFAULT_NETWORK_TIMEOUT))
+            if extra_keys.get('extra_headers'):
+                args['extra_headers'] = extra_keys['extra_headers']
 
             try:
                 fn_results = None
@@ -448,7 +450,9 @@ class Worker(object):
         self._put_results_from_response(object_info, headers)
 
     def handle_get_object(self, object_info):
+        extra_headers = object_info.get('get_headers')
         headers = self.ignoring_http_responses(
             (404, 503), client.get_object, object_info,
-            resp_chunk_size=object_info.get('block_size', DEFAULT_BLOCK_SIZE))
+            resp_chunk_size=object_info.get('block_size', DEFAULT_BLOCK_SIZE),
+            extra_headers=extra_headers)
         self._put_results_from_response(object_info, headers)

@@ -139,6 +139,12 @@ class Scenario(object):
         else:
             self.delete_after = self._scenario_data.get('delete_after')
 
+        # Object GET headers
+        # TODO You might want different GET headers for different sizes, so
+        #      maybe add a get_headers to each size and defaults to the
+        #      global, just like the CRUD_profile.
+        self.get_headers = self._scenario_data.get('get_headers')
+
     def packb(self):
         return msgpack.packb({
             '_scenario_data': self._scenario_data,
@@ -219,7 +225,8 @@ class Scenario(object):
             return self.create_job(size_str, i)
         elif crud_index == 1:
             return self.job(size_str, type=ssbench.READ_OBJECT,
-                            block_size=self.block_size)
+                            block_size=self.block_size,
+                            get_headers=self.get_headers)
         elif crud_index == 2:
             return self.job(
                 size_str, type=ssbench.UPDATE_OBJECT,

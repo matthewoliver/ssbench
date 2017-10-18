@@ -666,7 +666,7 @@ def delete_container(url, token, container, http_conn=None):
 
 
 def get_object(url, token, container, name, http_conn=None,
-               resp_chunk_size=65536):
+               resp_chunk_size=65536, extra_headers=None):
     """
     Modified for benchmarking to GET an object in "chunk sizes" of
     resp_chunk_size, throwing away the actual contents.
@@ -688,6 +688,8 @@ def get_object(url, token, container, name, http_conn=None,
     path = '%s/%s/%s' % (parsed.path, quote(container), quote(name))
     method = 'GET'
     headers = {'X-Auth-Token': token}
+    if extra_headers:
+        headers.update(extra_headers)
     start = time()
     conn.request(method, path, '', headers)
     resp = conn.getresponse()
